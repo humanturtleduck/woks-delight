@@ -1,6 +1,9 @@
 package net.humanturtleduck.woksdelight;
 
 import com.mojang.logging.LogUtils;
+import net.humanturtleduck.woksdelight.blocks.ModBlocks;
+import net.humanturtleduck.woksdelight.items.ModCreativeModeTab;
+import net.humanturtleduck.woksdelight.items.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.Blocks;
@@ -22,39 +25,27 @@ import org.slf4j.Logger;
 @Mod(WoksDelight.MOD_ID)
 public class WoksDelight
 {
-    // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "woksdelight";
-    // Directly reference a slf4j logger
+
     private static final Logger LOGGER = LogUtils.getLogger();
+
     public WoksDelight(FMLJavaModLoadingContext context)
     {
-        IEventBus modEventBus = context.getModEventBus();
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Register the commonSetup method for modloading
+       ModCreativeModeTab.register(modEventBus);
+
+        ModItems.register(modEventBus);
+
         modEventBus.addListener(this::commonSetup);
 
-
-        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-
-        // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
-        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
 
-        if (Config.logDirtBlock)
-            LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
-
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 
     // Add the example block item to the building blocks tab
@@ -67,8 +58,6 @@ public class WoksDelight
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -78,9 +67,7 @@ public class WoksDelight
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            // Some client setup code
-            LOGGER.info("hi");
-            LOGGER.info("user logged {}", Minecraft.getInstance().getUser().getName());
+
         }
     }
 }
